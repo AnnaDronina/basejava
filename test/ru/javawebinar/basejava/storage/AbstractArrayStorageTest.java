@@ -54,7 +54,7 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = StorageException.class)
     public void saveOwerflow() throws Exception {
         try {
-            for (int i = 3; i <= AbstractArrayStorage.STORAGE_LIMIT + 1; i++) {
+            for (int i = 3; i <= AbstractArrayStorage.STORAGE_LIMIT; i++) {
                 storage.save(RESUME4);
             }
         } catch (StorageException e) {
