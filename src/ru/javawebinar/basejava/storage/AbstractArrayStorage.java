@@ -1,5 +1,8 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
@@ -22,7 +25,7 @@ public abstract class AbstractArrayStorage implements Storage {
         size = 0;
     }
 
-    protected boolean isExisting(int index) {
+    private boolean isExisting(int index) {
         return index >= 0 && storage[index] != null;
     }
 
@@ -32,9 +35,9 @@ public abstract class AbstractArrayStorage implements Storage {
             addResume(r, index);
             size += 1;
         } else if (isExisting(index)) {
-            System.out.println("Резюме " + r + " уже было сохранено");
+            throw new ExistStorageException(r.getUuid());
         } else if (size == storage.length) {
-            System.out.println("Ошибка переполнения массива");
+            throw new StorageException("Ошибка переполнения массива", r.getUuid());
         }
     }
 
@@ -45,18 +48,16 @@ public abstract class AbstractArrayStorage implements Storage {
             storage[size - 1] = null;
             size -= 1;
         } else {
-            System.out.println("Резюме " + uuid + " не найдено");
+            throw new NotExistStorageException(uuid);
         }
     }
 
     public Resume get(String uuid) {
         int index = getIndex(uuid);
-        if (isExisting(index)) {
-            return storage[index];
-        } else {
-            System.out.println("Резюме " + uuid + " не найдено");
+        if (!isExisting(index)) {
+            throw new NotExistStorageException(uuid);
         }
-        return null;
+        return storage[index];
     }
 
 
@@ -65,7 +66,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (isExisting(index)) {
             storage[index] = resume;
         } else {
-            System.out.println("Резюме " + resume + " нельзя обновить, т.к. не его не существует");
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
